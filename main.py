@@ -10,12 +10,12 @@ from openai import OpenAI
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-assert OPENAI_API_KEY, "❌ OPENAI_API_KEY is missing from environment variables."
+assert OPENAI_API_KEY, " OPENAI_API_KEY is missing from environment variables."
 
 
 # --- Step 1: Extract Text from PDF ---
 def extract_text_from_pdf(pdf_path):
-    print(f"📄 Extracting text from {pdf_path}...")
+    print(f"Extracting text from {pdf_path}...")
     doc = fitz.open(pdf_path)
     return "".join([page.get_text() for page in doc])
 
@@ -28,13 +28,13 @@ def chunk_text(text, chunk_size=1000, chunk_overlap=200):
 
 # --- Step 3: Embed Documents ---
 def embed_documents(docs, embedding_model):
-    print("🔍 Generating embeddings for document chunks...")
+    print(" Generating embeddings for document chunks...")
     return embedding_model.embed_documents([doc.page_content for doc in docs])
 
 
 # --- Step 4: Store in Vector DB (Chroma) ---
 def store_in_chroma(docs, embeddings, collection_name="springboot_docs"):
-    print("📦 Storing embeddings in ChromaDB...")
+    print("Storing embeddings in ChromaDB...")
     chroma_client = chromadb.Client(Settings())
     collection = chroma_client.get_or_create_collection(name=collection_name)
     for i, doc in enumerate(docs):
@@ -49,7 +49,7 @@ def store_in_chroma(docs, embeddings, collection_name="springboot_docs"):
 
 # --- Step 5: Query Chroma and GPT ---
 def query_rag(collection, embedding_model, query, api_key):
-    print(f"❓ Querying: {query}")
+    print(f" Querying: {query}")
     query_embedding = embedding_model.embed_query(query)
     results = collection.query(query_embeddings=[query_embedding], n_results=3)
 
@@ -82,12 +82,12 @@ def main():
 
     # Step 5: Query
     while True:
-        question = input("\n❓ Ask me anything about Spring Boot (or type 'exit' to quit): ")
+        question = input("\n Ask me anything about Spring Boot (or type 'exit' to quit): ")
         if question.lower() == "exit":
             break
 
         answer = query_rag(collection, embedding_model, question, OPENAI_API_KEY)
-        print("\n💬 GPT Answer:\n", answer)
+        print("\n GPT Answer:\n", answer)
 
 
 if __name__ == "__main__":
